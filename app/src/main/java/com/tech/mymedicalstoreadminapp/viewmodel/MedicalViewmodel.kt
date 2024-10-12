@@ -1,5 +1,6 @@
 package com.tech.mymedicalstoreadminapp.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.mymedicalstoreadminapp.domain.repository.MedicalRepository
@@ -7,11 +8,14 @@ import com.tech.mymedicalstoreadminapp.responseState.AddProductState
 import com.tech.mymedicalstoreadminapp.responseState.GetAllUserState
 import com.tech.mymedicalstoreadminapp.responseState.MedicalResponseState
 import com.tech.mymedicalstoreadminapp.responseState.UpdateUserState
+import com.tech.mymedicalstoreadminapp.screen_state.ProductAddScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +32,13 @@ class MedicalViewmodel @Inject constructor(
 
     private val _addProductResponseState = MutableStateFlow(AddProductState())
     val addProductResponseState = _addProductResponseState.asStateFlow()
+
+    private val _addProductScreenData = MutableStateFlow(ProductAddScreenState())
+    val addProductScreenData = _addProductScreenData.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ProductAddScreenState()
+    )
 
     init {
         getAllUsers()
@@ -107,5 +118,18 @@ class MedicalViewmodel @Inject constructor(
                 }
             }
         }
+    }
+    fun resetProductAddScreenState(){
+        _addProductScreenData.value = ProductAddScreenState(
+            productName = mutableStateOf(""),
+            productCategory = mutableStateOf(""),
+            productPrice = mutableStateOf(""),
+            productDescription = mutableStateOf(""),
+            productPower = mutableStateOf(""),
+            productRating = mutableStateOf(""),
+            productStock = mutableStateOf(""),
+            productExpiryDate = mutableStateOf(""),
+            productImage = mutableStateOf(null)
+        )
     }
 }

@@ -17,3 +17,6 @@ object AllUserShowScreenRoute
 
 @Serializable
 object NothingScreenRoute
+
+@Serializable
+object BottomScreenRoute

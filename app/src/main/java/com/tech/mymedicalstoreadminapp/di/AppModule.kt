@@ -1,6 +1,6 @@
 package com.tech.mymedicalstoreadminapp.di
 
-import com.tech.mymedicalshopuser.utils.BASE_URL
+import com.tech.mymedicalstoreadminapp.utils.BASE_URL
 import com.tech.mymedicalstoreadminapp.data.repository.MedicalRepositoryImpl
 import com.tech.mymedicalstoreadminapp.data.services.ApiServices
 import com.tech.mymedicalstoreadminapp.domain.repository.MedicalRepository

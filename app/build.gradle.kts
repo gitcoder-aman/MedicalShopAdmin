@@ -78,4 +78,8 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     implementation(libs.accompanist.systemuicontroller)
+
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.coil.compose)
+
 }

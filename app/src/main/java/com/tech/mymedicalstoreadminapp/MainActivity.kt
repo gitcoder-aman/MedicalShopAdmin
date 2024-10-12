@@ -1,9 +1,11 @@
 package com.tech.mymedicalstoreadminapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tech.mymedicalstoreadminapp.navigation.AppNavigation
 import com.tech.mymedicalstoreadminapp.screen.all_user_screen.AllUserShowScreen
 import com.tech.mymedicalstoreadminapp.screen.ApproveUserScreen
 import com.tech.mymedicalstoreadminapp.screen.OrderHistoryScreen
@@ -56,12 +59,14 @@ data class BottomNavigationItem(
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
             val bottomNavController = rememberNavController()
+//            AppNavigation()
             MyAppTheme {
                 val items = listOf<BottomNavigationItem>(
                     BottomNavigationItem(
@@ -145,8 +150,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-                        },
-                        floatingActionButton = {
+                        }, floatingActionButton = {
                             FloatingActionButton(
                                 onClick = {
                                     bottomNavController.navigate("Add Product")
@@ -170,7 +174,7 @@ class MainActivity : ComponentActivity() {
                             composable("Approve User") { ApproveUserScreen() }
                             composable("Order Status") { OrderStatusScreen() }
                             composable("Order History") { OrderHistoryScreen() }
-                            composable("Add Product") { ProductAddScreen() }
+                            composable("Add Product") { ProductAddScreen(bottomNavController) }
                         }
                     }
 
