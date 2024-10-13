@@ -1,5 +1,6 @@
 package com.tech.mymedicalstoreadminapp.data.repository
 
+import com.tech.mymedicalstoreadminapp.data.response.order.MedicalOrderResponseItem
 import com.tech.mymedicalstoreadminapp.data.response.signupLogin.MessageStatusResponse
 import com.tech.mymedicalstoreadminapp.data.response.user.GetAllUsersResponseItem
 import com.tech.mymedicalstoreadminapp.data.services.ApiServices
@@ -64,6 +65,32 @@ class MedicalRepositoryImpl @Inject constructor(
             )
             emit(MedicalResponseState.Success(response))
         } catch (e: Exception) {
+            emit(MedicalResponseState.Error(e.message.toString()))
+        }
+    }
+
+    override suspend fun getAllOrders(): Flow<MedicalResponseState<Response<ArrayList<MedicalOrderResponseItem>>>> = flow {
+        emit(MedicalResponseState.Loading)
+        try {
+            val response = apiServices.getAllOrders()
+            emit(MedicalResponseState.Success(response))
+        }catch (e : Exception){
+            emit(MedicalResponseState.Error(e.message.toString()))
+        }
+    }
+
+    override suspend fun doApprovedOrder(
+        orderId: String,
+        isApprovedOrder: Int
+    ): Flow<MedicalResponseState<Response<MessageStatusResponse>>> = flow {
+        emit(MedicalResponseState.Loading)
+        try {
+            val response = apiServices.doApprovedOrder(
+                orderId = orderId,
+                isApprovedOrder = isApprovedOrder
+            )
+            emit(MedicalResponseState.Success(response))
+        }catch (e :Exception){
             emit(MedicalResponseState.Error(e.message.toString()))
         }
     }

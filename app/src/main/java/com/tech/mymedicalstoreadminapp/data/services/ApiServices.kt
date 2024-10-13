@@ -1,6 +1,7 @@
 package com.tech.mymedicalstoreadminapp.data.services
 
 
+import com.tech.mymedicalstoreadminapp.data.response.order.MedicalOrderResponseItem
 import com.tech.mymedicalstoreadminapp.data.response.signupLogin.MessageStatusResponse
 import com.tech.mymedicalstoreadminapp.data.response.user.GetAllUsersResponseItem
 import retrofit2.Response
@@ -34,5 +35,15 @@ interface ApiServices {
         @Field("product_image") productImage : String,
         @Field("product_power") productPower : String,
     ):Response<MessageStatusResponse>
+
+    @GET("getAllOrders")
+    suspend fun getAllOrders() : Response<ArrayList<MedicalOrderResponseItem>>
+
+    @FormUrlEncoded
+    @PATCH("updateOrder")
+    suspend fun doApprovedOrder(
+        @Field("orderId") orderId : String,
+        @Field("isApproved") isApprovedOrder : Int
+    ) : Response<MessageStatusResponse>
 
 }

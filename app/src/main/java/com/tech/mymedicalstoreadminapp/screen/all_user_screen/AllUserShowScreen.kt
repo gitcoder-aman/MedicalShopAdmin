@@ -99,7 +99,6 @@ fun AllUserShowScreen(
                             Toast.makeText(context, "DisApproved", Toast.LENGTH_SHORT).show()
                         })
                     }
-
             }
 
             Log.d("TAG", "AllUserShowScreen: ${getAllUserResponseState.value.data}")

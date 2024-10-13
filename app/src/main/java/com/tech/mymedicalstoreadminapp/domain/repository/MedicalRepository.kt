@@ -1,5 +1,6 @@
 package com.tech.mymedicalstoreadminapp.domain.repository
 
+import com.tech.mymedicalstoreadminapp.data.response.order.MedicalOrderResponseItem
 import com.tech.mymedicalstoreadminapp.data.response.signupLogin.MessageStatusResponse
 import com.tech.mymedicalstoreadminapp.data.response.user.GetAllUsersResponseItem
 import com.tech.mymedicalstoreadminapp.responseState.MedicalResponseState
@@ -25,5 +26,11 @@ interface MedicalRepository {
         productDescription: String,
         productImage: String,
         productPower: String,
+    ): Flow<MedicalResponseState<Response<MessageStatusResponse>>>
+
+    suspend fun getAllOrders(): Flow<MedicalResponseState<Response<ArrayList<MedicalOrderResponseItem>>>>
+    suspend fun doApprovedOrder(
+        orderId: String,
+        isApprovedOrder: Int
     ): Flow<MedicalResponseState<Response<MessageStatusResponse>>>
 }

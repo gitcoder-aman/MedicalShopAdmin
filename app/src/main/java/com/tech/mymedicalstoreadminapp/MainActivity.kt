@@ -40,11 +40,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.tech.mymedicalstoreadminapp.navigation.AppNavigation
 import com.tech.mymedicalstoreadminapp.screen.all_user_screen.AllUserShowScreen
 import com.tech.mymedicalstoreadminapp.screen.ApproveUserScreen
 import com.tech.mymedicalstoreadminapp.screen.OrderHistoryScreen
-import com.tech.mymedicalstoreadminapp.screen.OrderStatusScreen
+import com.tech.mymedicalstoreadminapp.screen.order_screen.OrderStatusScreen
 import com.tech.mymedicalstoreadminapp.screen.ProductAddScreen
 import dagger.hilt.android.AndroidEntryPoint
 

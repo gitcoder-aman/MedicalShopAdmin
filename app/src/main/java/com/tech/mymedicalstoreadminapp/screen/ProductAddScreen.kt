@@ -99,6 +99,7 @@ fun ProductAddScreen(
                     Toast.makeText(
                         context, productAddResponseState.value.data!!.message(), Toast.LENGTH_SHORT
                     ).show()
+                    Toast.makeText(context, "Product Added Successfully", Toast.LENGTH_SHORT).show()
                 }
 
             } else {
@@ -230,7 +231,7 @@ fun ProductAddScreen(
                         productPrice = productAddScreenState.value.productPrice.value.toInt(),
                         productDescription = productAddScreenState.value.productDescription.value,
                         productImage = productAddScreenState.value.productImage.value.toString(),
-                        productPower = productAddScreenState.value.productPrice.value,
+                        productPower = productAddScreenState.value.productPower.value,
                         productRating = productAddScreenState.value.productRating.value.toFloat(),
                         productStock = productAddScreenState.value.productStock.value.toInt(),
                         productExpiryDate = productAddScreenState.value.productExpiryDate.value
