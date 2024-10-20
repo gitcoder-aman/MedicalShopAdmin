@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.mymedicalstoreadminapp.domain.repository.MedicalRepository
 import com.tech.mymedicalstoreadminapp.responseState.AddProductState
-import com.tech.mymedicalstoreadminapp.responseState.GetAllOrderState
 import com.tech.mymedicalstoreadminapp.responseState.GetAllUserState
 import com.tech.mymedicalstoreadminapp.responseState.MedicalResponseState
 import com.tech.mymedicalstoreadminapp.responseState.UpdateUserState
@@ -17,6 +16,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -90,20 +93,21 @@ class MedicalViewmodel @Inject constructor(
         productExpiryDate: String,
         productRating: Float,
         productDescription: String,
-        productImage: String,
+        productImageFile: MultipartBody.Part,
         productPower: String,
     ){
+
         viewModelScope.launch(Dispatchers.IO) {
             medicalRepository.addProduct(
-                productName = productName,
-                productCategory = productCategory,
-                productPrice = productPrice,
-                productStock = productStock,
-                productExpiryDate = productExpiryDate,
-                productRating = productRating,
-                productDescription = productDescription,
-                productImage = productImage,
-                productPower = productPower
+                productName = productName.toRequestBody("text/plain".toMediaTypeOrNull()),
+                productCategory = productCategory.toRequestBody("text/plain".toMediaTypeOrNull()),
+                productPrice = productPrice.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                productStock = productStock.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                productExpiryDate = productExpiryDate.toRequestBody("text/plain".toMediaTypeOrNull()),
+                productRating = productRating.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                productDescription = productDescription.toRequestBody("text/plain".toMediaTypeOrNull()),
+                productImage = productImageFile,
+                productPower = productPower.toRequestBody("text/plain".toMediaTypeOrNull())
             ).collect{
                 when(it){
                     is MedicalResponseState.Loading -> {

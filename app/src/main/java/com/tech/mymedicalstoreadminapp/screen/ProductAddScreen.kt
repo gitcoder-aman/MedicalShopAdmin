@@ -1,6 +1,7 @@
 package com.tech.mymedicalstoreadminapp.screen
 
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,7 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CurrencyRupee
@@ -65,14 +66,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.tech.mymedicalstoreadminapp.utils.isFloat
 import com.tech.mymedicalstoreadminapp.utils.isInteger
 import com.tech.mymedicalstoreadminapp.R
 import com.tech.mymedicalstoreadminapp.screen_state.ProductAddScreenState
 import com.tech.mymedicalstoreadminapp.ui.theme.GreenColor
 import com.tech.mymedicalstoreadminapp.ui.theme.darkWhiteColor
+import com.tech.mymedicalstoreadminapp.utils.getFileFromUri
 import com.tech.mymedicalstoreadminapp.viewmodel.MedicalViewmodel
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -93,11 +98,11 @@ fun ProductAddScreen(
         }
 
         productAddResponseState.value.data != null -> {
-            if (productAddResponseState.value.data!!.isSuccessful) {
+            if (productAddResponseState.value.data!!.body()?.status == 200) {
                 LaunchedEffect(Unit) {
                     medicalViewmodel.resetProductAddScreenState()
                     Toast.makeText(
-                        context, productAddResponseState.value.data!!.message(), Toast.LENGTH_SHORT
+                        context, productAddResponseState.value.data!!.body()?.message, Toast.LENGTH_SHORT
                     ).show()
                     Toast.makeText(context, "Product Added Successfully", Toast.LENGTH_SHORT).show()
                 }
@@ -108,7 +113,8 @@ fun ProductAddScreen(
         }
 
         productAddResponseState.value.error != null -> {
-            Text(text = "${productAddResponseState.value.error}")
+            Log.d("@product", "ProductAddScreen: ${productAddResponseState.value.error}")
+            Toast.makeText(context, productAddResponseState.value.error, Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -220,25 +226,35 @@ fun ProductAddScreen(
             Spacer(modifier = Modifier.height(10.dp))
             AddItemButton("Add Product") {
 
-                if (isInteger(productAddScreenState.value.productPrice.value) && isInteger(
-                        productAddScreenState.value.productStock.value
-                    ) && isFloat(productAddScreenState.value.productRating.value)
-                ) {
+                val imageFile = getFileFromUri(context,productAddScreenState.value.productImage.value!!)
 
-                    medicalViewmodel.addProduct(
-                        productName = productAddScreenState.value.productName.value,
-                        productCategory = productAddScreenState.value.productCategory.value,
-                        productPrice = productAddScreenState.value.productPrice.value.toInt(),
-                        productDescription = productAddScreenState.value.productDescription.value,
-                        productImage = productAddScreenState.value.productImage.value.toString(),
-                        productPower = productAddScreenState.value.productPower.value,
-                        productRating = productAddScreenState.value.productRating.value.toFloat(),
-                        productStock = productAddScreenState.value.productStock.value.toInt(),
-                        productExpiryDate = productAddScreenState.value.productExpiryDate.value
-                    )
+                if (imageFile != null && imageFile.exists()) {
+                    val requestFile = imageFile.asRequestBody("image/jpg".toMediaTypeOrNull())
+                    val body = MultipartBody.Part.createFormData("pic", imageFile.name, requestFile)
+
+                    if (isInteger(productAddScreenState.value.productPrice.value) && isInteger(
+                            productAddScreenState.value.productStock.value
+                        ) && isFloat(productAddScreenState.value.productRating.value)
+                    ) {
+
+                        medicalViewmodel.addProduct(
+                            productName = productAddScreenState.value.productName.value,
+                            productCategory = productAddScreenState.value.productCategory.value,
+                            productPrice = productAddScreenState.value.productPrice.value.toInt(),
+                            productDescription = productAddScreenState.value.productDescription.value,
+                            productImageFile = body,
+                            productPower = productAddScreenState.value.productPower.value,
+                            productRating = productAddScreenState.value.productRating.value.toFloat(),
+                            productStock = productAddScreenState.value.productStock.value.toInt(),
+                            productExpiryDate = productAddScreenState.value.productExpiryDate.value
+                        )
+                    } else {
+                        Toast.makeText(context, "Please enter valid data", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Toast.makeText(context, "Please enter valid data", Toast.LENGTH_SHORT).show()
+                    Log.e("UploadError", "Image file not found or could not be accessed.")
                 }
+
             }
 
         }
@@ -322,7 +338,7 @@ fun SelectItemImageSection(productAddScreenState: State<ProductAddScreenState>) 
         productAddScreenState.value.productImage.value?.let {
             Spacer(modifier = Modifier.height(5.dp))
             Image(
-                painter = rememberImagePainter(productAddScreenState.value.productImage.value),
+                painter = rememberAsyncImagePainter(productAddScreenState.value.productImage.value),
                 contentDescription = "",
                 modifier = Modifier
                     .height(110.dp)
@@ -374,8 +390,6 @@ fun AddItemTextField(
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = GreenColor
         ),
-
-        readOnly = if (titleText == "title text") true else false,
     )
 }
 
@@ -386,7 +400,7 @@ fun CategoryHeader(titleText: String, backOnClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = Icons.Filled.ArrowBack,
+        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "",
             tint = Color.Unspecified,
             modifier = Modifier

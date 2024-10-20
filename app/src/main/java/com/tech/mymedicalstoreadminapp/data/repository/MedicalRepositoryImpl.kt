@@ -1,5 +1,6 @@
 package com.tech.mymedicalstoreadminapp.data.repository
 
+import android.net.Uri
 import com.tech.mymedicalstoreadminapp.data.response.order.MedicalOrderResponseItem
 import com.tech.mymedicalstoreadminapp.data.response.signupLogin.MessageStatusResponse
 import com.tech.mymedicalstoreadminapp.data.response.user.GetAllUsersResponseItem
@@ -8,6 +9,8 @@ import com.tech.mymedicalstoreadminapp.domain.repository.MedicalRepository
 import com.tech.mymedicalstoreadminapp.responseState.MedicalResponseState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -40,18 +43,19 @@ class MedicalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addProduct(
-        productName: String,
-        productCategory: String,
-        productPrice: Int,
-        productStock: Int,
-        productExpiryDate: String,
-        productRating: Float,
-        productDescription: String,
-        productImage: String,
-        productPower: String
-    ): Flow<MedicalResponseState<Response<MessageStatusResponse>>> = flow {
+        productName: RequestBody,
+        productCategory: RequestBody,
+        productPrice: RequestBody,
+        productStock: RequestBody,
+        productExpiryDate: RequestBody,
+        productRating: RequestBody,
+        productDescription: RequestBody,
+        productImage: MultipartBody.Part,
+        productPower: RequestBody
+    ): Flow<MedicalResponseState<Response<MessageStatusResponse>>>  = flow{
         emit(MedicalResponseState.Loading)
-        try {
+
+        try{
             val response = apiServices.addProduct(
                 productName = productName,
                 productCategory = productCategory,
@@ -60,11 +64,11 @@ class MedicalRepositoryImpl @Inject constructor(
                 productExpiryDate = productExpiryDate,
                 productRating = productRating,
                 productDescription = productDescription,
-                productImage = productImage,
+                pic = productImage,
                 productPower = productPower
             )
             emit(MedicalResponseState.Success(response))
-        } catch (e: Exception) {
+        }catch (e : Exception){
             emit(MedicalResponseState.Error(e.message.toString()))
         }
     }

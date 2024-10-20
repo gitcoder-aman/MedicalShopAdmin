@@ -72,6 +72,8 @@ dependencies {
     //retrofit for network calling
     implementation(libs.converter.gson)
     implementation(libs.retrofit2.retrofit)
+    implementation(libs.okhttp) // or latest version
+
 
     //dagger
     implementation(libs.hilt.android)
