@@ -6,6 +6,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 const val BASE_URL = "https://aman93578.pythonanywhere.com/"
+const val GET_IMG_URL = "https://aman93578.pythonanywhere.com/getImg/"
+
 
 fun isInteger(input: String): Boolean {
     return try {

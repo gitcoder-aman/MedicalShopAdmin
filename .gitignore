@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/java/com/tech/mymedicalstoreadminapp/utils/Constant.kt
+app/src/main/java/com/tech/mymedicalstoreadminapp/utils/Constant.kt

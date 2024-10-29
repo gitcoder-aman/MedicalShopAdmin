@@ -18,11 +18,26 @@ class OrderViewmodel @Inject constructor(
     private val medicalRepository: MedicalRepository
 ) : ViewModel() {
 
-    private val _getAllOrders = MutableStateFlow(GetAllOrderState())
-    val getAllOrders = _getAllOrders.asStateFlow()
+    private val _getAllOrdersState = MutableStateFlow(GetAllOrderState())
+    val getAllOrdersState = _getAllOrdersState.asStateFlow()
+
+    private val _getSpecificOrderState = MutableStateFlow(GetAllOrderState())
+    val getSpecificOrderState = _getSpecificOrderState.asStateFlow()
 
     private val _doApprovedOrder = MutableStateFlow(UpdateOrderState())
     val doApprovedOrder = _doApprovedOrder.asStateFlow()
+
+    private val _updateShippedOrderState = MutableStateFlow(UpdateOrderState())
+    val updateShippedOrderState = _updateShippedOrderState.asStateFlow()
+
+    private val _updateOutOfDeliveryOrderState = MutableStateFlow(UpdateOrderState())
+    val updateOutOfDeliveryOrderState = _updateOutOfDeliveryOrderState.asStateFlow()
+
+    private val _updateDeliveredOrderState = MutableStateFlow(UpdateOrderState())
+    val updateDeliveredOrderState = _updateDeliveredOrderState.asStateFlow()
+
+    private val _updateCancelledOrderState = MutableStateFlow(UpdateOrderState())
+    val updateCancelledOrderState = _updateCancelledOrderState.asStateFlow()
 
 
     init {
@@ -34,25 +49,27 @@ class OrderViewmodel @Inject constructor(
             medicalRepository.getAllOrders().collect {
                 when (it) {
                     is MedicalResponseState.Loading -> {
-                        _getAllOrders.value = GetAllOrderState(loading = true)
+                        _getAllOrdersState.value = GetAllOrderState(loading = true)
                     }
 
                     is MedicalResponseState.Success -> {
-                        _getAllOrders.value = GetAllOrderState(data = it.data)
+                        _getAllOrdersState.value = GetAllOrderState(data = it.data)
                     }
 
                     is MedicalResponseState.Error -> {
-                        _getAllOrders.value = GetAllOrderState(error = it.message)
+                        _getAllOrdersState.value = GetAllOrderState(error = it.message)
                     }
                 }
             }
         }
     }
-    fun updateOrderApproved(orderId : String , isApprovedOrder : Int){
+
+    fun updateOrderApproved(orderId : String , isApprovedOrder : Int, orderStatusStep : String){
         viewModelScope.launch {
             medicalRepository.doApprovedOrder(
                 orderId = orderId,
-                isApprovedOrder = isApprovedOrder
+                isApprovedOrder = isApprovedOrder,
+                orderStatusStep = orderStatusStep
             ).collect{
                 when(it){
                     is MedicalResponseState.Loading -> {
@@ -67,5 +84,113 @@ class OrderViewmodel @Inject constructor(
                 }
             }
         }
+    }
+    fun updateShippedDateOrder(orderId : String , shippedDate : String,orderStatusStep : String){
+        viewModelScope.launch {
+            medicalRepository.updateShippedOrder(
+                orderId = orderId,
+                shippedDate = shippedDate,
+                orderStatusStep = orderStatusStep
+            ).collect{
+                when(it){
+                    is MedicalResponseState.Loading -> {
+                        _updateShippedOrderState.value = UpdateOrderState(loading = true)
+                    }
+                    is MedicalResponseState.Success -> {
+                        _updateShippedOrderState.value = UpdateOrderState(data = it.data)
+                    }
+                    is MedicalResponseState.Error -> {
+                        _updateShippedOrderState.value = UpdateOrderState(error = it.message)
+                    }
+                }
+            }
+        }
+    }
+    fun updateOutOfDeliveryDateOrder(orderId : String , outOfDeliveryDate : String,orderStatusStep : String){
+        viewModelScope.launch {
+            medicalRepository.updateOutOfDeliveryOrder(
+                orderId = orderId,
+                outOfDeliveryDate = outOfDeliveryDate,
+                orderStatusStep = orderStatusStep
+            ).collect{
+                when(it){
+                    is MedicalResponseState.Loading -> {
+                        _updateOutOfDeliveryOrderState.value = UpdateOrderState(loading = true)
+                    }
+                    is MedicalResponseState.Success -> {
+                        _updateOutOfDeliveryOrderState.value = UpdateOrderState(data = it.data)
+                    }
+                    is MedicalResponseState.Error -> {
+                        _updateOutOfDeliveryOrderState.value = UpdateOrderState(error = it.message)
+                    }
+                }
+            }
+        }
+    }
+    fun updateDeliveredDateOrder(orderId : String , deliveredDate : String,orderStatusStep : String){
+        viewModelScope.launch {
+            medicalRepository.updateDeliveredOrder(
+                orderId = orderId,
+                deliveredDate = deliveredDate,
+                orderStatusStep = orderStatusStep
+            ).collect{
+                when(it){
+                    is MedicalResponseState.Loading -> {
+                        _updateDeliveredOrderState.value = UpdateOrderState(loading = true)
+                    }
+                    is MedicalResponseState.Success -> {
+                        _updateDeliveredOrderState.value = UpdateOrderState(data = it.data)
+                    }
+                    is MedicalResponseState.Error -> {
+                        _updateDeliveredOrderState.value = UpdateOrderState(error = it.message)
+                    }
+                }
+            }
+        }
+    }
+    fun updateCancelledStatusOrder(orderId : String , cancelStatus : String,orderStatusStep : String){
+        viewModelScope.launch {
+            medicalRepository.updateCancelOrder(
+                orderId = orderId,
+                cancelStatus = cancelStatus,
+                orderStatusStep = orderStatusStep
+            ).collect{
+                when(it){
+                    is MedicalResponseState.Loading -> {
+                        _updateCancelledOrderState.value = UpdateOrderState(loading = true)
+                    }
+                    is MedicalResponseState.Success -> {
+                        _updateCancelledOrderState.value = UpdateOrderState(data = it.data)
+                    }
+                    is MedicalResponseState.Error -> {
+                        _updateCancelledOrderState.value = UpdateOrderState(error = it.message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun getSpecificOrder(orderId : String){
+        viewModelScope.launch {
+            medicalRepository.getSpecificOrder(orderId).collect {
+                when (it) {
+                    is MedicalResponseState.Loading -> {
+                        _getSpecificOrderState.value = GetAllOrderState(loading = true)
+                    }
+                    is MedicalResponseState.Success -> {
+                        _getSpecificOrderState.value = GetAllOrderState(data = it.data)
+                    }
+                    is MedicalResponseState.Error -> {
+                        _getSpecificOrderState.value = GetAllOrderState(error = it.message)
+                    }
+                }
+            }
+        }
+    }
+    fun resetUpdateOrderState(){
+        _doApprovedOrder.value = UpdateOrderState()
+        _updateShippedOrderState.value = UpdateOrderState()
+        _updateOutOfDeliveryOrderState.value = UpdateOrderState()
+        _updateDeliveredOrderState.value = UpdateOrderState()
     }
 }
