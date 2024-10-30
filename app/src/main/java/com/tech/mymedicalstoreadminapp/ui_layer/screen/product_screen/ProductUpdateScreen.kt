@@ -70,7 +70,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 @Composable
 fun ProductUpdateScreen(
     navController: NavHostController,
-    productViewmodel: ProductViewmodel = hiltViewModel()
+    productViewmodel: ProductViewmodel
 ) {
 
     val context = LocalContext.current
